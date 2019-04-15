@@ -7,6 +7,9 @@ from math import ceil
 from pygal import Line
 from pygal.style import Style
 from functools import reduce
+from datetime import datetime, timedelta
+
+from influxdb import InfluxDBClient
 
 from axpert.settings import datalogger_conf
 from axpert.http_handler import (
@@ -159,20 +162,52 @@ def datalogger_create(log, comms_executor, cmds):
     try:
         status_cmd, mode_cmd = cmds['status'], cmds['operation_mode']
 
-        with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
-            ensure_db_structure(log, db_conn)
+        host = "192.168.0.85"
+        port = 8086
+        user = "admin"
+        password = "admin"
+        dbname = "home"
 
+        with  InfluxDBClient(host, port, user, password, dbname) as db_conn:
             last = 0
             while True:
-                status_data = _execute_cmd(status_cmd)
-                mode_data = _execute_cmd(mode_cmd)
-                last = datalogger_interval_record(
-                    log, db_conn, status_data, mode_data, last
-                )
-                datalogger_sampler_record(
-                    log, db_conn, status_data, mode_data
-                )
-                sleep(LAST_INTERVAL)
+                  status_data = _execute_cmd(status_cmd)
+                  mode_data = _execute_cmd(mode_cmd)
+                  json_body = [
+                      {
+                          "measurement": "tank_temperature",
+                          "tags": {
+                              "level": "1"
+                          },
+                          "time": int(float(datetime.now().strftime('%s.%f'))),
+                          "fields": status_data
+                      }
+                  ]
+                  db_conn.write_points(json_body, time_precision="s")
+        #         last = datalogger_interval_record(
+        #             log, db_conn, status_data, mode_data, last
+        #         )
+                  sleep(LAST_INTERVAL)
+
+
+        # with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
+        #     ensure_db_structure(log, db_conn)
+        #
+        #     last = 0
+        #     while True:
+        #         status_data = _execute_cmd(status_cmd)
+        #         mode_data = _execute_cmd(mode_cmd)
+        #         last = datalogger_interval_record(
+        #             log, db_conn, status_data, mode_data, last
+        #         )
+        #         datalogger_sampler_record(
+        #             log, db_conn, status_data, mode_data
+        #         )
+        #         sleep(LAST_INTERVAL)
+
+        with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
+
+
 
     except Exception as e:
         log.error('Exception in datalogger')
