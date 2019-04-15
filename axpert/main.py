@@ -261,26 +261,26 @@ def run_as_daemon(daemon, args, connector=None):
         # I curry the started calls to be able to have a generic
         # process checker that know nothing about the start parameters
         # (see check_process fnx)
-        http_server_start = partial(start_http_server, comms_executor)
+        #http_server_start = partial(start_http_server, comms_executor)
         datalogger_server_start = partial(start_datalogger, comms_executor)
-        datalogger_http_server_start = partial(start_datalogger_http)
-        charger_start = partial(start_charger, comms_executor)
-
-        http_server = http_server_start()
+        # datalogger_http_server_start = partial(start_datalogger_http)
+        # charger_start = partial(start_charger, comms_executor)
+        #
+        # http_server = http_server_start()
         datalogger_server = datalogger_server_start()
-        datalogger_http_server = datalogger_http_server_start()
-        charger = charger_start()
+        # datalogger_http_server = datalogger_http_server_start()
+        # charger = charger_start()
 
-        start_watchdog(
-            http_server_fail_event, datalogger_server_fail_event
-        )
+        # start_watchdog(
+        #     http_server_fail_event, datalogger_server_fail_event
+        # )
 
         restart_count_http, restart_count_datalogger = 0, 0
         while True:
-            http_server, restart_count_http = check_process(
-                http_server, http_server_start, http_server_fail_event,
-                'HTTP Server', restart_count_http
-            )
+            # http_server, restart_count_http = check_process(
+            #     http_server, http_server_start, http_server_fail_event,
+            #     'HTTP Server', restart_count_http
+            # )
             datalogger_server, restart_count_datalogger = check_process(
                 datalogger_server, datalogger_server_start,
                 datalogger_server_fail_event,
@@ -289,10 +289,10 @@ def run_as_daemon(daemon, args, connector=None):
             sleep(1)
 
     except ShutdownDaemonAndRestart:
-        kill_process(http_server, 'HTTP Server')
+       # kill_process(http_server, 'HTTP Server')
         kill_process(datalogger_server, 'Datalogger Server')
-        kill_process(datalogger_http_server, 'Datalogger HTTP Server')
-        kill_process(charger, 'Charger')
+        #kill_process(datalogger_http_server, 'Datalogger HTTP Server')
+        #kill_process(charger, 'Charger')
         log.error('Restart all Locks, Events and Processes')
 
     except Exception as e:

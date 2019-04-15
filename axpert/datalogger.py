@@ -205,7 +205,7 @@ def datalogger_create(log, comms_executor, cmds):
         #         )
         #         sleep(LAST_INTERVAL)
 
-        with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
+        #with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
 
 
 
