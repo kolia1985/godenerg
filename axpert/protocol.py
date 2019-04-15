@@ -125,7 +125,7 @@ def status_json_formatter(raw, serialize=True):
         ('load_percent', to_int), ('bus_volt', to_int),
         ('batt_volt', to_float), ('batt_charge_amps', to_int),
         ('batt_capacity', to_int), ('temp', to_int),
-        ('pv_amps', to_int), ('pv_volts', to_float),
+        ('pv_amps', to_float), ('pv_volts', to_float),
         ('batt_volt_scc', to_float), ('batt_discharge_amps', to_int),
         ('raw_status', to_str),
         ('mask_b', to_str), ('mask_c', to_str),
