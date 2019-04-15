@@ -174,6 +174,7 @@ def datalogger_create(log, comms_executor, cmds):
               status_data = _execute_cmd(status_cmd)
               mode_data = _execute_cmd(mode_cmd)
               #log.info(type(status_data))
+
               json_body = [
                   {
                       "measurement": "solar",
@@ -183,7 +184,17 @@ def datalogger_create(log, comms_executor, cmds):
                       "time": int(float(datetime.now().strftime('%s.%f'))),
                       "fields": {
                           "pv_watts": status_data["pv_watts"],
-                          "ac_watt": status_data["ac_watt"]
+                          "ac_watt": status_data["ac_watt"],
+                          "grid_volt": status_data["grid_volt"],
+                          "ac_volt": status_data["ac_volt"],
+                          "bus_volt": status_data["bus_volt"],
+                          "batt_volt": status_data["batt_volt"],
+                          "batt_charge_amps": status_data["batt_charge_amps"],
+                          "batt_capacity": status_data["batt_capacity"],
+                          "pv_amps": status_data["pv_amps"],
+                          "pv_volts": status_data["pv_volts"],
+                          "batt_volt_scc": status_data["batt_volt_scc"],
+                          "batt_discharge_amps": status_data["batt_discharge_amps"]
                       }
                   }
               ]
