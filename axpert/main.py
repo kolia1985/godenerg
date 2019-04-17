@@ -166,22 +166,22 @@ def watchdog_datalogger_server(fail_event):
         fail_event.set()
 
 
-def watchdog(http_fail_event, datalogger_fail_event):
+def watchdog(datalogger_fail_event):
     try:
         while True:
             sleep(WATCHDOG_INTERVAL)
-            watchdog_http_server(http_fail_event)
+            #watchdog_http_server(http_fail_event)
             watchdog_datalogger_server(datalogger_fail_event)
 
     except Exception as e:
         log.exception(e)
 
 
-def start_watchdog(http_fail_event, datalogger_fail_event):
+def start_watchdog(datalogger_fail_event):
     log.info('Starting Watchdog')
     thread = Thread(
         target=watchdog,
-        args=[http_fail_event, datalogger_fail_event]
+        args=[datalogger_fail_event]
     )
     thread.start()
     log.info('Watchdog started')
@@ -271,9 +271,9 @@ def run_as_daemon(daemon, args, connector=None):
         # datalogger_http_server = datalogger_http_server_start()
         # charger = charger_start()
 
-        # start_watchdog(
-        #     http_server_fail_event, datalogger_server_fail_event
-        # )
+        start_watchdog(
+            datalogger_server_fail_event
+        )
 
         restart_count_http, restart_count_datalogger = 0, 0
         while True:
