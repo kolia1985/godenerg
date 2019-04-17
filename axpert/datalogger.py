@@ -177,7 +177,7 @@ def datalogger_create(log, comms_executor, cmds):
 
               json_body = [
                   {
-                      "measurement": "solar",
+                      "measurement": "solar1",
                       "tags": {
                           "level": "1"
                       },
@@ -185,6 +185,7 @@ def datalogger_create(log, comms_executor, cmds):
                       "fields": {
                           "pv_watts": status_data["pv_watts"],
                           "ac_watt": status_data["ac_watt"],
+                          "ac_va": status_data["ac_va"],
                           "grid_volt": status_data["grid_volt"],
                           "ac_volt": status_data["ac_volt"],
                           "bus_volt": status_data["bus_volt"],
