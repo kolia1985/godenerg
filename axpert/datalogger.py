@@ -56,6 +56,12 @@ INDEXES = {
 CREATE_TABLE_STATEMENT = 'CREATE TABLE {} ({})'
 
 
+host = "192.168.0.85"
+port = 8086
+user = "admin"
+password = "admin"
+dbname = "home"
+
 def ensure_db_indexes(log, tab, cursor):
     try:
         for col in INDEXES[tab]:
@@ -162,12 +168,6 @@ def datalogger_create(log, comms_executor, cmds):
     try:
         status_cmd, mode_cmd = cmds['status'], cmds['operation_mode']
 
-        host = "192.168.0.85"
-        port = 8086
-        user = "admin"
-        password = "admin"
-        dbname = "home"
-
         db_conn =  InfluxDBClient(host, port, user, password, dbname)# as db_conn:
         last = 0
         while True:
@@ -236,21 +236,37 @@ def txt_dt_to_int(txt):
 
 
 def get_last_data_datetime(log):
-    with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
-        cursor = db_conn.cursor()
-        cursor.execute(
-            'SELECT datetime FROM stats '
-            'ORDER BY datetime DESC LIMIT 1;'
-        )
-        dt = cursor.fetchone()
-        if dt:
-            try:
-                return datetime.fromtimestamp(dt[0])
-            except Exception as e:
-                log.exception(e)
-                return 0
-        else:
+    db_conn =  InfluxDBClient(host, port, user, password, dbname)
+    result = db_conn.query('SELECT "pv_watts" FROM "solar1" WHERE time > now() - 1h ORDER BY time ASC LIMIT 1')
+    # 2019-04-17T03:58:31Z
+    points = list(result.get_points("solar1"))
+    if points:
+        dt = points[0]['time']
+        try:
+            return datetime.strptime(dt, '%Y-%m-%dT%H:%M:%SZ')
+        except Exception as e:
+            log.exception(e)
             return 0
+    else:
+        return 0
+
+    #>>> client.query('SELECT "duration" FROM "pyexample"."autogen"."brushEvents" WHERE time > now() - 4d GROUP BY "user"')
+
+    # with connect(datalogger_conf['db_filename'], timeout=1) as db_conn:
+    #     cursor = db_conn.cursor()
+    #     cursor.execute(
+    #         'SELECT datetime FROM stats '
+    #         'ORDER BY datetime DESC LIMIT 1;'
+    #     )
+    #     dt = cursor.fetchone()
+    #     if dt:
+    #         try:
+    #             return datetime.fromtimestamp(dt[0])
+    #         except Exception as e:
+    #             log.exception(e)
+    #             return 0
+    #     else:
+    #         return 0
 
 
 def get_avg_last(log, minutes=30):

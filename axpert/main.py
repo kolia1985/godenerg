@@ -249,6 +249,8 @@ def comms(fnx):
 @comms
 def run_as_daemon(daemon, args, connector=None):
     log.info('Starting Godenerg as daemon')
+
+
     http_server_fail_event = Event()        # Thread Event
     datalogger_server_fail_event = Event()  # Thread Event
     comms_lock = Lock()                     # Process Lock
@@ -351,6 +353,7 @@ if __name__ == '__main__':
         log = logging.getLogger('godenerg')
         log.setLevel(log_level)
         log.addHandler(logging.StreamHandler(sys.stdout))
+
         if 'extract' in args and args['extract']:
             extract(args)
         else:
