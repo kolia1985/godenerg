@@ -159,7 +159,9 @@ def watchdog_http_server(fail_event):
 
 def watchdog_datalogger_server(fail_event):
     last_dt = get_last_data_datetime(log)
-    now = datetime.now()
+    #log.info(last_dt)
+    now = datetime.utcnow()
+    #log.info(now)
     delta = (now - last_dt).total_seconds()
     datalogger_interval = datalogger_conf['interval']
     if delta > (datalogger_interval * 2):
