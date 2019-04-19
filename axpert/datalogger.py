@@ -237,7 +237,7 @@ def txt_dt_to_int(txt):
 
 def get_last_data_datetime(log):
     db_conn =  InfluxDBClient(host, port, user, password, dbname)
-    result = db_conn.query('SELECT "pv_watts" FROM "solar1" WHERE time > now() - 1h ORDER BY time ASC LIMIT 1')
+    result = db_conn.query('SELECT "pv_watts" FROM "solar1" WHERE time > now() - 1h ORDER BY time DESC LIMIT 1')
     # 2019-04-17T03:58:31Z
     points = list(result.get_points("solar1"))
     if points:
