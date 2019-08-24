@@ -1,4 +1,5 @@
 import hidraw
+import os
 
 from connector import (Connector)
 from time import sleep
@@ -22,12 +23,24 @@ class USBConnector(Connector):
         return data
 
     def open(self):
-        device = self.devices[0]
+        #device = self.devices[0]
+        try:
+           device = list(filter(lambda i: i['product_id'] == 20833, hidraw.enumerate()))[0]['path']
+        except:
+           import os
+           from time import sleep
+           os.system("./usbreset /dev/bus/usb/001/002")
+           sleep(1)
+           device = list(filter(lambda i: i['product_id'] == 20833, hidraw.enumerate()))[0]['path']
+        self.log.info("Open device: %s" % device)
         try:
             self.dev = hidraw.device()
-            self.dev.open_path(device.encode())
+            self.dev.open_path(device)
         except Exception as e:
             self.log.error(e)
+            import os
+            self.log.info("Reset USB")
+            os.system("./usbreset /dev/bus/usb/001/002")
 
     def close(self):
         self.dev.close()

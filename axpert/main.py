@@ -1,3 +1,4 @@
+
 import logging
 import os
 import sys
@@ -159,6 +160,8 @@ def watchdog_http_server(fail_event):
 
 def watchdog_datalogger_server(fail_event):
     last_dt = get_last_data_datetime(log)
+    if last_dt == 0:
+        fail_event.set()
     #log.info(last_dt)
     now = datetime.utcnow()
     #log.info(now)
@@ -351,6 +354,7 @@ if __name__ == '__main__':
             while True:
                 run_as_daemon(daemon, args)
                 sleep(5)
+        sys.exit(0)
     else:
         log = logging.getLogger('godenerg')
         log.setLevel(log_level)
